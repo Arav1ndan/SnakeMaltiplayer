@@ -3,6 +3,12 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
   public static Grid Instance { get; private set; }
+    private float cellSize = 1f;
+    private Vector3 originPosition = Vector3.zero;
+    [SerializeField]
+    private Vector2Int gridSize = new Vector2Int(10, 10);
+
+    public Vector2Int GridSize => gridSize;
 
     private void Awake()
     {
@@ -16,10 +22,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    private float cellSize = 1f;
-    private Vector3 originPosition = Vector3.zero;
-    [SerializeField]
-    private Vector2Int gridSize = new Vector2Int(10, 10);
+    
     public Vector3 GridToWorldPostition(Vector2Int gridPosition)
     {
         float x = gridPosition.x * cellSize + originPosition.x + cellSize / 2f;
