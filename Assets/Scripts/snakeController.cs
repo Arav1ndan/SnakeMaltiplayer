@@ -15,9 +15,17 @@ public class snakeController : MonoBehaviour
 
     private void Start()
     {
-        Vector2Int startPosition = new Vector2Int(Grid.Instance.GridSize.x / 2, Grid.Instance.GridSize.y / 2);
-        snakeBody.Add(startPosition);
-        transform.position = Grid.Instance.GridToWorldPostition(startPosition);
+        //Vector2Int startPosition = new Vector2Int(Grid.Instance.GridSize.x / 2, Grid.Instance.GridSize.y / 2);
+        //snakeBody.Add(startPosition);
+        //transform.position = Grid.Instance.GridToWorldPostition(startPosition);
+  
+        
+            if (snakeBody.Count == 0) // If snakeBody is empty, add the head's position
+            {
+                Vector2Int headPosition = Grid.Instance.WorldToGridPosition(transform.position);
+                snakeBody.Add(headPosition);
+            }
+        
     }
     private void Update()
     {
@@ -40,8 +48,10 @@ public class snakeController : MonoBehaviour
     {
         if (snakeBody.Count == 0)
         {
-            Debug.LogError("snakeBody is empty! Movement stopped.");
-            return; // Prevent further execution
+            Debug.LogWarning("snakeBody was empty, initializing with head position.");
+            Vector2Int headPosition = Grid.Instance.WorldToGridPosition(transform.position);
+            snakeBody.Add(headPosition);
+            return;
         }
 
         Vector2Int newHeadPosition = snakeBody[0] + snakeDirection;
@@ -59,13 +69,14 @@ public class snakeController : MonoBehaviour
             snakeBody.RemoveAt(snakeBody.Count - 1);
 
         transform.position = Grid.Instance.GridToWorldPostition(newHeadPosition);
+        
         if (SnakeBodyObj.Count < snakeBody.Count - 1)
         {
             GameObject newBodyPart = Instantiate(SneakHead, transform.position, Quaternion.identity);
             SnakeBodyObj.Add(newBodyPart);
         }
 
-        for (int i = 0; i < SnakeBodyObj.Count; i++)
+        for (int i = 0; i < SnakeBodyObj.Count && i + 1 < snakeBody.Count; i++)
         {
             SnakeBodyObj[i].transform.position = Grid.Instance.GridToWorldPostition(snakeBody[i + 1]);
         }
@@ -74,17 +85,44 @@ public class snakeController : MonoBehaviour
     }
     public void IncreaseLength(int amount)
     {
+        //for (int i = 0; i < amount; i++)
+        //{
+        //    snakeBody.Add(snakeBody[snakeBody.Count - 1]);
+        //}
+        if (snakeBody.Count == 0) return; // Prevent invalid access
+
+        Vector2Int lastBodyPart = snakeBody[snakeBody.Count - 1]; // Get last body part
+
         for (int i = 0; i < amount; i++)
         {
-            snakeBody.Add(snakeBody[snakeBody.Count - 1]);
+            snakeBody.Add(lastBodyPart);
+
+            // Instantiate body object
+            GameObject newBodyPart = Instantiate(SneakHead, Grid.Instance.GridToWorldPostition(lastBodyPart), Quaternion.identity);
+            SnakeBodyObj.Add(newBodyPart);
         }
     }
 
     public void DecreaseLength(int amount)
     {
-        if (snakeBody.Count > amount)
+        //if (snakeBody.Count > amount)
+        //{
+        //    snakeBody.RemoveRange(snakeBody.Count - amount, amount);
+
+        //}
+        if (snakeBody.Count <= 1) return; // Ensure head is not removed
+
+        int removeCount = Mathf.Min(amount, snakeBody.Count - 1); // Only remove body parts
+
+        // Remove tail elements from snakeBody list
+        snakeBody.RemoveRange(snakeBody.Count - removeCount, removeCount);
+
+        // Destroy corresponding body objects
+        for (int i = 0; i < removeCount && SnakeBodyObj.Count > 0; i++)
         {
-            snakeBody.RemoveRange(snakeBody.Count - amount, amount);
+            GameObject lastPart = SnakeBodyObj[SnakeBodyObj.Count - 1]; // Get last body part
+            SnakeBodyObj.RemoveAt(SnakeBodyObj.Count - 1); // Remove from list
+            Destroy(lastPart); // Destroy the GameObject
         }
     }
 
