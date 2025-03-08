@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -12,6 +13,19 @@ public class snakeController : MonoBehaviour
 
     private float moveTimer = 0;
     public float moveRate = 0.2f;
+
+    [SerializeField] private float moveSpeed = 5f;
+    private bool isShieldActive = false;
+    private bool isScoreBoostActive = false;
+    private int score = 0;
+
+    public float MoveSpeed => moveSpeed;
+    public bool IsShieldActive => isShieldActive;
+    public bool IsScoreBoostActive => isScoreBoostActive;
+    public int Score => score;
+
+    [SerializeField]
+    private ScoreController scoreController;
 
     private void Start()
     {
@@ -27,6 +41,8 @@ public class snakeController : MonoBehaviour
             }
         
     }
+   
+
     private void Update()
     {
         HandleInput();
@@ -85,10 +101,6 @@ public class snakeController : MonoBehaviour
     }
     public void IncreaseLength(int amount)
     {
-        //for (int i = 0; i < amount; i++)
-        //{
-        //    snakeBody.Add(snakeBody[snakeBody.Count - 1]);
-        //}
         if (snakeBody.Count == 0) return; // Prevent invalid access
 
         Vector2Int lastBodyPart = snakeBody[snakeBody.Count - 1]; // Get last body part
@@ -99,17 +111,13 @@ public class snakeController : MonoBehaviour
 
             // Instantiate body object
             GameObject newBodyPart = Instantiate(SneakHead, Grid.Instance.GridToWorldPostition(lastBodyPart), Quaternion.identity);
-            SnakeBodyObj.Add(newBodyPart);
+    
+            SnakeBodyObj.Add(newBodyPart);            
         }
     }
 
     public void DecreaseLength(int amount)
     {
-        //if (snakeBody.Count > amount)
-        //{
-        //    snakeBody.RemoveRange(snakeBody.Count - amount, amount);
-
-        //}
         if (snakeBody.Count <= 1) return; // Ensure head is not removed
 
         int removeCount = Mathf.Min(amount, snakeBody.Count - 1); // Only remove body parts
@@ -121,8 +129,9 @@ public class snakeController : MonoBehaviour
         for (int i = 0; i < removeCount && SnakeBodyObj.Count > 0; i++)
         {
             GameObject lastPart = SnakeBodyObj[SnakeBodyObj.Count - 1]; // Get last body part
+       
             SnakeBodyObj.RemoveAt(SnakeBodyObj.Count - 1); // Remove from list
-            Destroy(lastPart); // Destroy the GameObject
+            Destroy(lastPart); // Destroy the GameObject        
         }
     }
 
@@ -132,9 +141,27 @@ public class snakeController : MonoBehaviour
     }
     public void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("tail"))
+        if (other.gameObject.CompareTag("Tail"))
         {
             Debug.Log("snake has eaten tail...");
         }
     }
+    public void ActivateShield(bool isActive)
+    {
+        isShieldActive = isActive;
+    }
+    public void ActivateScoreBoost(bool isActive)
+    {
+        isScoreBoostActive = isActive;
+    }
+
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision.CompareTag("Tail"))
+    //    {
+    //        Debug.Log("went through tail");
+
+    //    }
+    //}
+
 }

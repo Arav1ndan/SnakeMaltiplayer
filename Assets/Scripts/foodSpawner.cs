@@ -9,6 +9,8 @@ public class foodSpawner : MonoBehaviour
     private float minSpawnTime = 1f;
     [SerializeField]
     private float maxSpawnTime = 3f;
+    [SerializeField]
+    private float autoFoodDestroyTime = 3f;
 
     private void Start()
     {
@@ -19,7 +21,8 @@ public class foodSpawner : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(Random.Range(minSpawnTime, maxSpawnTime));
-            SpawnRandomFood();
+            GameObject spawnedFood = SpawnRandomFood();
+            StartCoroutine(DestroyFoodAfterTime(spawnedFood, autoFoodDestroyTime));
         }
     }
     private GameObject GetRandomFood()
@@ -28,7 +31,7 @@ public class foodSpawner : MonoBehaviour
         return foodPrefabs[randomFood];
 
     }
-    private void SpawnRandomFood()
+    private GameObject SpawnRandomFood()
     {
         int randomX = Random.Range(0, Grid.Instance.GridSize.x);
         int randomY = Random.Range(0, Grid.Instance.GridSize.y);
@@ -36,8 +39,18 @@ public class foodSpawner : MonoBehaviour
         Vector3 spawnPosition = Grid.Instance.GridToWorldPostition(new Vector2Int(randomX, randomY));
 
         GameObject foodToSpawn = GetRandomFood();
-        Instantiate(foodToSpawn, spawnPosition, Quaternion.identity);
+        GameObject spawnedFood  = Instantiate(foodToSpawn, spawnPosition, Quaternion.identity);
+
+        return spawnedFood;
     }
 
-   
+    private IEnumerator DestroyFoodAfterTime(GameObject food, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (food != null) 
+        {
+            Destroy(food);
+        }
+    }
+
 }
