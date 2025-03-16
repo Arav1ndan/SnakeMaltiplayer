@@ -33,14 +33,17 @@ public class foodController : MonoBehaviour
                 if (m_foodType == FoodType.MassGainer) {
                     snake.IncreaseLength(sizeChange);
                  scoreController.IncreaseScore(10);
+                    //Destroy(gameObject);
                     Debug.Log("snake eat" + FoodType.MassGainer + name);
                 }                
                 else if(m_foodType == FoodType.MassBurner && snake.CanShrink())
                 {
                     snake.DecreaseLength(sizeChange);
                     scoreController.DecreaseScore(10);
-                }   
+                    Destroy(gameObject);
+                }
                 Destroy(gameObject);
+
             }
         }
     }

@@ -36,6 +36,23 @@ public class Grid : MonoBehaviour
         int y = Mathf.FloorToInt((worldPosition.y - originPosition.y) / cellSize);
         return new Vector2Int(x, y);
     }
+    //public Vector2Int GetRandomGridPosition()
+    //{
+    //    int x = Random.Range(0, GridSize.x);
+    //    int y = Random.Range(0, GridSize.y);
+
+    //    Vector3 spawnPosistion = GridToWorldPostition(new Vector2Int(x, y));
+    //    return spawnPosistion;
+    //}
+    public Vector3 GetRandomGridPosition()
+    {
+        int x = Random.Range(0, GridSize.x);
+        int y = Random.Range(0, GridSize.y);
+
+        Vector2Int randomGridPosition = new Vector2Int(x, y);
+        return GridToWorldPostition(randomGridPosition);
+    }
+
 
     private void OnDrawGizmos()
     {

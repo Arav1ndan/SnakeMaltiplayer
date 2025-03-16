@@ -8,6 +8,7 @@ public class ScoreController : MonoBehaviour
  
     private int score;
 
+    private snakeController snake;
     //private void Awake()
     //{
     //    scoreText = GetComponent<TextMeshProUGUI>();
@@ -22,8 +23,13 @@ public class ScoreController : MonoBehaviour
     }
     public void IncreaseScore(int increment)
     {
-        score += increment;
-        RefreshUI();
+        
+        //if (snake.IncreaseScore(increment)
+        //{
+        //    increment *= 2;
+        //}
+        //score += increment;
+        //RefreshUI();
     }
     public void DecreaseScore(int decrement)
     {
